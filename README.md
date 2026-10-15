@@ -1,5 +1,9 @@
 # Titanic deployment
 
+## [Open the live app →](https://titanicpredict-eipq.onrender.com/)
+
+**Deployed on Render:** [titanicpredict-eipq.onrender.com](https://titanicpredict-eipq.onrender.com/)
+
 A standalone FastAPI app with a browser page. The existing fitted model is
 loaded once at startup; requests run inference without retraining.
 
@@ -52,7 +56,7 @@ uvicorn app:app --host 0.0.0.0 --port $PORT
 ```
 
 `python app.py` also reads `PORT`, defaulting to 8000 locally.
-These files prepare the app for Render; no service has been created or published.
+The deployed app is available at [titanicpredict-eipq.onrender.com](https://titanicpredict-eipq.onrender.com/).
 
 ## Trigger a prediction
 
