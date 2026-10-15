@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Titanic · Survival Explorer</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #183d40;
+      --muted: #607477;
+      --accent: #17675e;
+      --line: #dce5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f2;
+      color: var(--ink);
+      font: 16px/1.55 system-ui, sans-serif;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+    }
+
+    nav {
+      max-width: 1060px;
+      margin: auto;
+      padding: 22px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      letter-spacing: .15em;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .header-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    main {
+      max-width: 1060px;
+      padding: 55px 28px 30px;
+      margin: auto;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 900px;
+      font: clamp(48px, 7.5vw, 88px)/1.04 Georgia, serif;
+      letter-spacing: -.04em;
+      margin: 18px 0 24px;
+    }
+
+    .intro {
+      max-width: 650px;
+      color: var(--muted);
+      margin-bottom: 34px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 21px;
+    }
+
+    .help {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 24px;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    input,
+    select {
+      width: 100%;
+      margin-top: 7px;
+      border: 1px solid #c9d6d1;
+      border-radius: 7px;
+      padding: 11px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 15px;
+    }
+
+    input:focus,
+    select:focus,
+    button:focus-visible {
+      outline: 3px solid #8bc7b8;
+      outline-offset: 2px;
+    }
+
+    button {
+      border: 0;
+      background: var(--accent);
+      color: white;
+      border-radius: 8px;
+      padding: 14px 20px;
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 26px;
+    }
+
+    button:hover {
+      background: #104f48;
+    }
+
+    button:disabled {
+      opacity: .65;
+      cursor: wait;
+    }
+
+    .result {
+      background: #e9f0eb;
+      border-color: #d2dfd5;
+    }
+
+    .result h2 {
+      font: 28px/1.2 Georgia, serif;
+      margin: 14px 0;
+    }
+
+    .value {
+      font: 64px/1.2 Georgia, serif;
+      margin: 24px 0 4px;
+    }
+
+    .bar {
+      background: #ccdcd2;
+      height: 8px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 18px 0;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--accent);
+      width: 0;
+      transition: width .4s;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid #ccdbd0;
+      padding-top: 20px;
+      margin-top: 26px;
+    }
+
+    #error {
+      color: #9e3025;
+      font-size: 14px;
+    }
+
+    footer {
+      margin: 28px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .history {
+      margin: 0 0 32px;
+      padding: 22px 0;
+      border-block: 1px solid var(--line);
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 14px;
+    }
+
+    .history strong {
+      display: block;
+      font: 32px/1.2 Georgia, serif;
+      margin-bottom: 5px;
+    }
+
+    .history p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 16px 0 0;
+    }
+
+    .context {
+      margin-top: 38px;
+    }
+
+    .context>h2 {
+      font: clamp(28px, 4vw, 38px)/1.2 Georgia, serif;
+      margin: 10px 0;
+    }
+
+    .context-intro {
+      max-width: 750px;
+      color: var(--muted);
+    }
+
+    .dataset-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .dataset-stats .card {
+      padding: 22px;
+    }
+
+    .dataset-stats strong {
+      display: block;
+      font: 38px/1.2 Georgia, serif;
+      margin-bottom: 5px;
+    }
+
+    .dataset-stats span {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .context-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .class-chart {
+      margin: 24px 0 0;
+    }
+
+    .class-row {
+      margin-bottom: 20px;
+    }
+
+    .class-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .class-row .bar {
+      margin: 9px 0 5px;
+      background: #e8eee9;
+    }
+
+    .class-count {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .explain {
+      margin: 18px 0 0;
+    }
+
+    .explain dt {
+      font-weight: 650;
+      font-size: 14px;
+      margin-top: 18px;
+    }
+
+    .explain dd {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .reading {
+      margin-top: 24px;
+      background: #edf1e9;
+    }
+
+    .reading p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    @media(max-width:720px) {
+
+      .layout,
+      .context-grid {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding-top: 32px;
+      }
+
+      .card {
+        padding: 22px;
+      }
+
+      .history-grid {
+        gap: 16px;
+      }
+
+      .header-note {
+        display: none;
+      }
+    }
+
+    @media(max-width:520px) {
+      .dataset-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .history-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .history-grid>div {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .history strong {
+        font-size: 28px;
+        margin: 0;
+      }
+    }
+
+    @media(max-width:400px) {
+      .fields {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav aria-label="Site identity"><span class="brand">TITANIC / EXPLORER</span><span class="header-note">History
+        through the lens of data</span></nav>
+  </header>
+  <main>
+    <div class="eyebrow">A journey into the data · 1912</div>
+    <h2>Every passenger has a story.</h2>
+    <p class="intro">Explore how a passenger's circumstances shape a model's survival estimate. Enter the details below
+      to see a prediction from the trained Titanic model.</p>
+    <section class="history" aria-labelledby="history-title">
+      <h3 id="history-title" class="eyebrow">The voyage behind the numbers</h3>
+      <div class="history-grid">
+        <div><strong>1912</strong>
+          <p>Titanic sank on 15 April during her maiden voyage from Southampton to New York.</p>
+        </div>
+        <div><strong>20</strong>
+          <p>Lifeboats aboard, with space for approximately 1,178 people.</p>
+        </div>
+        <div><strong>≈2,200</strong>
+          <p>Passengers and crew aboard. Approximately 1,500 lives were lost.</p>
+        </div>
+      </div>
+      <p class="source">Historical figures: Royal Museums Greenwich, “RMS Titanic facts.” Totals are approximate.</p>
+    </section>
+    <div class="layout">
+      <section class="card" aria-labelledby="details-title">
+        <h2 id="details-title">Passenger details</h2>
+        <p class="help">Leave age or fare blank if unknown.</p>
+        <form id="passenger-form">
+          <div class="fields">
+            <label>Passenger class<select name="Pclass">
+                <option value="1">First class</option>
+                <option value="2">Second class</option>
+                <option value="3" selected>Third class</option>
+              </select></label>
+            <label>Sex<select name="Sex">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select></label>
+            <label>Age (years)<input name="Age" type="number" min="0" step="any" value="22"
+                placeholder="Unknown"></label>
+            <label>Fare (£)<input name="Fare" type="number" min="0" step="any" value="7.25"
+                placeholder="Unknown"></label>
+            <label>Siblings / spouses aboard<input name="SibSp" type="number" min="0" step="1" value="0"
+                required></label>
+            <label>Parents / children aboard<input name="Parch" type="number" min="0" step="1" value="0"
+                required></label>
+            <label>Port of embarkation<select name="Embarked">
+                <option value="S">Southampton</option>
+                <option value="C">Cherbourg</option>
+                <option value="Q">Queenstown</option>
+                <option value="">Unknown</option>
+              </select></label>
+          </div>
+          <button id="submit" type="submit">Explore survival estimate →</button>
+          <p id="error" role="alert" hidden></p>
+        </form>
+      </section>
+      <aside class="card result" aria-live="polite" aria-atomic="true">
+        <div class="eyebrow">The model's prediction</div>
+        <h2 id="outcome">A story waiting to unfold.</h2>
+        <p id="prompt" class="help">Complete the passenger details to explore a survival estimate.</p>
+        <div id="prediction" hidden>
+          <div class="value" id="probability"></div>
+          <div>estimated survival probability</div>
+          <div class="bar" aria-hidden="true"><span id="probability-bar"></span></div>
+        </div>
+        <p class="note">Based on a random forest trained on historical Titanic passenger data. This is a statistical
+          estimate for exploration, not a statement of an individual's actual fate.</p>
+      </aside>
+    </div>
+    <section class="context" aria-labelledby="dataset-title">
+      <div class="eyebrow">Understand the evidence</div>
+      <h2 id="dataset-title">What the passenger records tell us.</h2>
+      <p class="context-intro">The figures below describe the 891 passenger records in this project's labeled dataset.
+        They cover a subset of passengers, not everyone aboard or the crew, and are observed outcomes rather than model
+        predictions.</p>
+      <div class="dataset-stats">
+        <div class="card"><strong>891</strong><span>Passenger records with known outcomes</span></div>
+        <div class="card"><strong>342</strong><span>Recorded survivors in this dataset</span></div>
+        <div class="card"><strong>38.4%</strong><span>Observed survival rate in this dataset</span></div>
+      </div>
+      <div class="context-grid">
+        <section class="card" aria-labelledby="class-title">
+          <h2 id="class-title">Survival by passenger class</h2>
+          <p class="help">Share of passengers recorded as surviving within each class.</p>
+          <div class="class-chart">
+            <div class="class-row">
+              <div class="class-label"><span>First class</span><strong>63.0%</strong></div>
+              <div class="bar" aria-hidden="true"><span style="width:63%"></span></div>
+              <div class="class-count">136 survivors of 216 passengers</div>
+            </div>
+            <div class="class-row">
+              <div class="class-label"><span>Second class</span><strong>47.3%</strong></div>
+              <div class="bar" aria-hidden="true"><span style="width:47.3%"></span></div>
+              <div class="class-count">87 survivors of 184 passengers</div>
+            </div>
+            <div class="class-row">
+              <div class="class-label"><span>Third class</span><strong>24.2%</strong></div>
+              <div class="bar" aria-hidden="true"><span style="width:24.2%"></span></div>
+              <div class="class-count">119 survivors of 491 passengers</div>
+            </div>
+          </div>
+          <p class="source">Source: this project's labeled passenger dataset. Differences describe associations; they do
+            not establish that class alone caused an outcome.</p>
+        </section>
+        <section class="card" aria-labelledby="details-guide-title">
+          <h2 id="details-guide-title">What do the details mean?</h2>
+          <dl class="explain">
+            <dt>Passenger class &amp; fare</dt>
+            <dd>Class describes the ticket category. Fare is the recorded ticket price in pounds at the time, without
+              adjustment for inflation.</dd>
+            <dt>Family aboard</dt>
+            <dd>Count siblings and spouses separately from parents and children. These fields do not include every type
+              of relative or travelling companion.</dd>
+            <dt>Port of embarkation</dt>
+            <dd>Southampton in England, Cherbourg in France, or Queenstown in Ireland, now called Cobh.</dd>
+            <dt>Unknown details</dt>
+            <dd>Age is missing for 177 of the 891 records. For unknown age or fare, the model uses a typical value
+              learned during training; an unknown port uses its most frequent training category.</dd>
+          </dl>
+        </section>
+      </div>
+      <section class="card reading" aria-labelledby="reading-title">
+        <h2 id="reading-title">How to read your estimate</h2>
+        <p>A 70% estimate means the model assigns a probability of 0.70 to survival for those details. It is not a
+          verified personal chance or a reconstruction of what happened. The model learns patterns from a limited
+          historical sample; it cannot account for every event, decision, or circumstance aboard.</p>
+        <p>Try changing one detail at a time to explore how the estimate responds. This shows the model's behavior, not
+          what would have happened if a real passenger's circumstances had changed.</p>
+      </section>
+    </section>
+    <footer>Titanic Survival Explorer · Remembering the people behind the records.</footer>
+  </main>
+  <script>
+    const form = document.getElementById('passenger-form');
+    const button = document.getElementById('submit');
+    const errorBox = document.getElementById('error');
+    const prediction = document.getElementById('prediction');
+    function clearResult() {
+      prediction.hidden = true;
+      document.getElementById('outcome').textContent = 'A story waiting to unfold.';
+      document.getElementById('prompt').hidden = false;
+    }
+    form.addEventListener('input', () => { clearResult(); errorBox.hidden = true; });
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+      for (const key of ['Pclass', 'Age', 'SibSp', 'Parch', 'Fare']) {
+        data[key] = data[key] === '' ? null : Number(data[key]);
+      }
+      data.Embarked = data.Embarked || null;
+      errorBox.hidden = true;
+      clearResult();
+      button.disabled = true;
+      button.textContent = 'Calculating…';
+      // Prevent edits while an estimate for the current inputs is in flight.
+      const controls = Array.from(form.querySelectorAll('input, select'));
+      controls.forEach(control => { control.disabled = true; });
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data),
+          signal: AbortSignal.timeout(30000)
+        });
+        if (!response.ok) {
+          const body = await response.json().catch(() => ({}));
+          const detail = Array.isArray(body.detail) ? body.detail.map(item => `${item.loc.slice(1).join('.')}: ${item.msg}`).join('; ') : 'Prediction could not be completed. Please try again.';
+          throw new Error(detail);
+        }
+        const result = await response.json();
+        document.getElementById('outcome').textContent = result.survived === 1 ? 'Predicted to survive' : 'Predicted not to survive';
+        const percentage = (result.survival_probability * 100).toFixed(1) + '%';
+        document.getElementById('probability').textContent = percentage;
+        document.getElementById('probability-bar').style.width = percentage;
+        document.getElementById('prompt').hidden = true;
+        prediction.hidden = false;
+      } catch (error) {
+        errorBox.textContent = error.name === 'TypeError' || error.name === 'TimeoutError' ? 'Could not reach the prediction service. Please try again.' : error.message;
+        errorBox.hidden = false;
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Explore survival estimate →';
+        controls.forEach(control => { control.disabled = false; });
+      }
+    });
+  </script>
+</body>
+
+</html>
